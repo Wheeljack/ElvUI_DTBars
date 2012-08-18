@@ -10,6 +10,9 @@
 --------------------------------------------------------
 local E, L, V, DF, P, G =  unpack(ElvUI); --Inport: Engine, Locales, ProfileDB, GlobalDB
 local DT = E:GetModule('DataTexts')
+local LO = E:GetModule('Layout')
+
+E.Layout = LO;
 
 
 
@@ -174,8 +177,8 @@ do
 	extra_bar:SetTemplate('Transparent', true)
 	extra_bar:SetFrameLevel(0)
 	extra_bar:SetFrameStrata('BACKGROUND')
-	extra_bar:SetPoint("BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", E.mult, E.mult)
-	extra_bar:SetPoint("BOTTOMRIGHT", E.UIParent, "BOTTOMRIGHT", E.mult, E.mult) 
+	extra_bar:SetPoint("BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", -E.mult, -E.mult)
+	extra_bar:SetPoint("BOTTOMRIGHT", E.UIParent, "BOTTOMRIGHT", E.mult, -E.mult) 
 		
 	top_panel = CreateFrame('Frame', 'Top_Panel', E.UIParent)
 	top_panel.db = { key='Top_Panel', value = true }
@@ -187,12 +190,30 @@ do
 end	
 
 
+function DT:CheckLayout()
+	if E.db.datatexts.enableBottom then
+		RightChatPanel:SetFrameStrata('BACKGROUND')
+		RightChatPanel:SetFrameLevel(3)
+	end
+	
+	if E.db.datatexts.enableBottom then
+		LeftChatPanel:SetFrameStrata('BACKGROUND')
+		LeftChatPanel:SetFrameLevel(3)
+	end
+	
+	-- if E.db.datatexts.enableBottom then
+		-- ElvUIPetBattleActionBar:SetFrameLevel(3)
+	-- end
+	
+end
+
 function DT:CheckExtra()
 	if E.db.datatexts.enableTop then
 		top_panel:Show()
 	else
 		top_panel:Hide()
 	end
+	
 	if E.db.datatexts.enableBottom then
 		extra_bar:Show()
 	else
@@ -202,7 +223,7 @@ end
 
 function DT:ChangePanelSize()
 	top_panel:Size(E.UIParent:GetWidth() + (E.mult * 2), E.db.datatexts.topSize)
-	extra_bar:Size(2200, E.db.datatexts.bottomSize)
+	extra_bar:Size(E.UIParent:GetWidth() + (E.mult * 2), E.db.datatexts.bottomSize)
 	bottom_bar:Size(E.db.datatexts.bottomWidth, PANEL_HEIGHT)
 	top_bar:Size(E.db.datatexts.topWidth, PANEL_HEIGHT)
 	DT:UpdateAllDimensions()
@@ -251,7 +272,8 @@ end
 --------------------------------------------------------
 local function exp_rep_tab_setup()
 	UpperRepExpBarHolder:HookScript('OnUpdate', function() 
-		local parent_alpha = UpperRepExpBar:GetAlpha()
+		local parent_alpha = UpperRepExpBarHolder:GetAlpha()
+		local parent_alpha = UpperRepExpBarHolder:GetAlpha()
 		if exp_rep:GetAlpha() ~= parent_alpha then exp_rep:SetAlpha( parent_alpha) end
 	end )	
 end
@@ -386,8 +408,6 @@ function DT:Loading()
 	rchat_tab_setup()
 	exp_rep_tab_setup()
 	DT:ExpRepBarDP()
-	extra_bar:Hide()
-	top_panel:Hide()
 	DT:CheckExtra() 
 	DT:CheckTop()
 	DT:CheckBottom()
@@ -395,6 +415,7 @@ function DT:Loading()
 	DT:CheckLeftChat()
 	DT:CheckRightChat()
 	DT:ChangePanelSize()
+	DT:CheckLayout()
 
 	for name, obj in Broker.ldb:DataObjectIterator() do
 		if obj.OnCreate then obj.OnCreate(obj, Frame) end
@@ -470,7 +491,7 @@ Broker.ldb.obj = pluginObject
 --The reason we are doing this is cause core is trying to read default values from profile.lua in config folder of ElvUI
 --and doesn't find it so it puts the value as nil. Our code is looking for the value not nil and throws an error.
 function DT:DefaultsSet() 
-	if E.db.datatexts.enableTop then
+	if E.db.datatexts.enableTop == nil then
 		E.db.datatexts.enableTop = false
 	end
 	
