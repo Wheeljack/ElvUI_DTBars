@@ -56,7 +56,7 @@ E.Options.args.dtPanels = {
 							order = 1,
 							name = "Enabled",
 							get = function(info) return E.db.datatexts.bottomBar end,
-							set = function(info, value) E.db.datatexts.bottomBar = value; DT:CheckBottom() end,
+							set = function(info, value) E.db.datatexts.bottomBar = value; DT:CheckBottom(); DT:CheckLayout() end,
 						},
 						width = {
 							type = "range",
@@ -110,6 +110,14 @@ E.Options.args.dtPanels = {
 							name = "Enabled",
 							get = function(info) return E.db.datatexts.xpRep end,
 							set = function(info, value) E.db.datatexts.xpRep = value; DT:CheckXP() end,
+						},
+						mouseover = {
+							type = "toggle",
+							order = 2,
+							name = "Mouseover",
+							get = function(info) return E.db.datatexts.expMouseover end,
+							set = function(info, value) E.db.datatexts.expMouseover = value; DT:ExpRepMouseOver() end,
+						
 						},
 					},
 				},
