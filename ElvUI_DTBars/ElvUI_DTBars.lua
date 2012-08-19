@@ -304,6 +304,7 @@ function DT:ExpRepMouseOver()
 	
 	if not E.db.datatexts.expMouseover then
 		exp_rep:SetScript("OnUpdate", nil)
+		exp_rep:SetAlpha(1)
 	end
 	
 end
