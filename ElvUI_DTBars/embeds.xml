@@ -4,5 +4,6 @@
 	<Script file="Libs\LibStub\LibStub.lua"/>
 	<Include file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
 	<Script file="Libs\LibDataBroker\LibDataBroker-1.1.lua"/>
+	<Include file="Libs\AceLocale-3.0\AceLocale-3.0.xml"/>
 <!--@end-no-lib-strip@-->
 </Ui>
