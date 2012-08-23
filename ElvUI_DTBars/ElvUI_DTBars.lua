@@ -14,9 +14,6 @@ local LO = E:GetModule('Layout')
 
 E.Layout = LO;
 
-
-
-
 P['dtPanels'] = {
 	--['enable'] = true,
 	['enableTop'] = true,
@@ -31,18 +28,36 @@ P['dtPanels'] = {
 	['bottomWidth'] = 400,
 	['expMouseover'] = true,
 }
---local E, L, DF = unpack(ElvUI); --Engine
---local DT = E:GetModule('DataTexts')
+
+P['datatexts'] = {
+	['panels'] = {
+		['Extra One'] = {
+			['left'] = '',
+			['middle'] = '',
+			['right'] = '',
+		},
+		['Extra Two'] = {
+			['left'] = '',
+			['middle'] = '',
+			['right'] = '',
+		},
+		['Extra Three'] = {
+			['left'] = '',
+			['middle'] = '',
+			['right'] = '',
+		},
+	}
+}
 
 Broker = CreateFrame('Frame', 'Broker', E.UIParent)
 Broker.ldb = LibStub:GetLibrary("LibDataBroker-1.1")
 pluginObjects = {}
 
 ElvUI_DTbar = CreateFrame('Frame', 'ElvUI_DTbar', E.UIParent)
-ElvUI_DTbar.version = '2.2b'
+ElvUI_DTbar.version = '1.4'
 
 local top_bar, bottom_bar, exp_rep, extra_bar, top_panel
-local lchat_tab, rchat_tab, rchat_tab2
+local lchat_tab, rchat_tab, rchat_tab2, ldb_one, ldb_two, ldb_three
 local PANEL_HEIGHT = 22 -- taken from Layout.lua
 
 db = db or {} 
@@ -68,16 +83,38 @@ L['EXP_REP_TESTPANEL'] = 'EXP/REP Data Panel';
 L['LeftChatTab_Datatext_Panel'] = 'Upper Left Chat';
 L['RightChatTab_Datatext_Panel'] = 'Upper Right Chat';
 L['RightChatTab_Datatext_Panel2'] = 'Upper Right Chat 2';
+L['LDB_One'] = 'Extra One';
+L['LDB_Two'] = 'Extra Two';
+L['LDB_Three'] = 'Extra Three';
 --------------------------------------------------------
 
 
 --------------------------------------------------------
 -- default values for datatext
 --------------------------------------------------------
+DF.datatexts.panels.LDB_One = {
+	left = '',
+	middle = '',
+	right = '',
+}
+
+DF.datatexts.panels.LDB_Two = {
+	left = '',
+	middle = '',
+	right = '',
+}
+
+DF.datatexts.panels.LDB_Three = {
+	left = '',
+	middle = '',
+	right = '',
+}
+
+
 DF.datatexts.panels.TOP_TESTPANEL = {
-		left = 'Friends',
-		middle = 'Spec Switch',
-		right = 'Guild',
+	left = 'Friends',
+	middle = 'Spec Switch',
+	right = 'Guild',
 }
 
 --Bottom_Datatext_Panel
@@ -122,7 +159,6 @@ do
 	DT:RegisterPanel(lchat_tab, 1, 'ANCHOR_BOTTOM', 0, -4)
 	lchat_tab:Hide()
 end
---- 
  
  
 --------------------------------------------------------
@@ -222,6 +258,9 @@ function DT:ChangePanelSize()
 	extra_bar:Size(E.UIParent:GetWidth() + (E.mult * 2), E.db.datatexts.bottomSize)
 	bottom_bar:Size(E.db.datatexts.bottomWidth, PANEL_HEIGHT)
 	top_bar:Size(E.db.datatexts.topWidth, PANEL_HEIGHT)
+	ldb_one:Size(E.db.datatexts.ldbOneWidth, PANEL_HEIGHT)
+	ldb_two:Size(E.db.datatexts.ldbTwoWidth, PANEL_HEIGHT)
+	ldb_three:Size(E.db.datatexts.ldbThreeWidth, PANEL_HEIGHT)
 	DT:UpdateAllDimensions()
 end
 
@@ -308,6 +347,118 @@ function DT:ExpRepMouseOver()
 	end
 	
 end
+
+--------------------------------------------------------
+-- Extra Bars for Addon LDBs
+--------------------------------------------------------
+
+function DT:CheckAPanels()
+	if E.db.datatexts.ldbOne then
+		ldb_one:Show()
+	else
+		ldb_one:Hide()
+	end
+	
+	if E.db.datatexts.ldbTwo then
+		ldb_two:Show()
+	else
+		ldb_two:Hide()
+	end
+	
+	if E.db.datatexts.ldbThree then
+		ldb_three:Show()
+	else
+		ldb_three:Hide()
+	end
+end
+
+function DT:CheckLDBMouseover()
+	if E.db.datatexts.ldbOneMouseover then
+		ldb_one:SetScript("OnUpdate", function (self,event,...)
+			if MouseIsOver(LDB_One) then
+				ldb_one:SetAlpha(1)
+			else
+				ldb_one:SetAlpha(0)
+			end
+		end)
+	else
+		ldb_one:SetScript("OnUpdate", nil)
+		ldb_one:SetAlpha(1)
+	end
+	
+	if E.db.datatexts.ldbTwoMouseover then
+		ldb_two:SetScript("OnUpdate", function (self,event,...)
+			if MouseIsOver(LDB_Two) then
+				ldb_two:SetAlpha(1)
+			else
+				ldb_two:SetAlpha(0)
+			end
+		end)
+	else
+		ldb_two:SetScript("OnUpdate", nil)
+		ldb_two:SetAlpha(1)
+	end
+	
+	if E.db.datatexts.ldbThreeMouseover then
+		ldb_three:SetScript("OnUpdate", function (self,event,...)
+			if MouseIsOver(LDB_Three) then
+				ldb_three:SetAlpha(1)
+			else
+				ldb_three:SetAlpha(0)
+			end
+		end)
+	else
+		ldb_three:SetScript("OnUpdate", nil)
+		ldb_three:SetAlpha(1)
+	end
+	
+end
+
+	ldb_one = CreateFrame('Frame', 'LDB_One', E.UIParent)
+	ldb_one.db = { key='LDB_One', value = true }
+	DT:RegisterPanel(ldb_one, 3, 'ANCHOR_BOTTOM', 0, -4)
+	function DT:LDBOneDP()
+		ldb_one:SetTemplate('Default', true)
+		ldb_one:SetFrameStrata('HIGH')
+		ldb_one:SetFrameLevel(1)
+		ldb_one:Point("LEFT", Bottom_Datatext_Panel, "RIGHT", 1, 1)
+		ldb_one:SetScript('OnShow', function(self)
+			self:Size(E.db.datatexts.ldbOneWidth, PANEL_HEIGHT);
+			E:CreateMover(ldb_one, "ExtraOneMover", "Extra One")
+		end)
+		ldb_one:Hide()
+	end
+
+	ldb_two = CreateFrame('Frame', 'LDB_Two', E.UIParent)
+	ldb_two.db = { key='LDB_Two', value = true }
+	DT:RegisterPanel(ldb_two, 3, 'ANCHOR_BOTTOM', 0, -4)
+	function DT:LDBTwoDP()
+		ldb_two:SetTemplate('Default', true)
+		ldb_two:SetFrameStrata('HIGH')
+		ldb_two:SetFrameLevel(1)
+		ldb_two:Point("LEFT", LDB_One, "RIGHT", 0, 0)
+		ldb_two:SetScript('OnShow', function(self)
+			self:Size(E.db.datatexts.ldbTwoWidth, PANEL_HEIGHT);
+			E:CreateMover(ldb_two, "ExtraTwoMover", "Extra Two")
+		end)
+		ldb_two:Hide()
+	end
+	
+	ldb_three = CreateFrame('Frame', 'LDB_Three', E.UIParent)
+	ldb_three.db = { key='LDB_Three', value = true }
+	DT:RegisterPanel(ldb_three, 3, 'ANCHOR_BOTTOM', 0, -4)
+	function DT:LDBThreeDP()
+		ldb_three:SetTemplate('Default', true)
+		ldb_three:SetFrameStrata('HIGH')
+		ldb_three:SetFrameLevel(1)
+		ldb_three:Point("RIGHT", Bottom_Datatext_Panel, "LEFT", -1, 1)
+		ldb_three:SetScript('OnShow', function(self)
+			self:Size(E.db.datatexts.ldbThreeWidth, PANEL_HEIGHT);
+			E:CreateMover(ldb_three, "ExtraThreeMover", "Extra Three")
+		end)
+		ldb_three:Hide()
+	end
+	
 --------------------------------------------------------
 -- Toggling via ingame config
 --------------------------------------------------------
@@ -364,65 +515,21 @@ ElvUI_DTbar._table = {
 	rchat_tab,
 	rchat_tab2,
 }
-
- --[[local function SlashHandler(command)
-	if command == 'show all' then						-- show all
-		for k,v in ipairs(ElvUI_DTbar._table) do v:Show() db[v:GetName()] = true end
-	elseif command:match("^show .*") then				-- show <bar> --> this line is pure beauty
-		command = command:gsub("^show ","")
-		for k,v in ipairs(ElvUI_DTbar._table) do if (v:GetName():lower():match(command:lower())) then v:Show() db[v:GetName()] = true end end
-	elseif command == 'hide all' then					-- hide all
-		for k,v in ipairs(ElvUI_DTbar._table) do v:Hide() db[v:GetName()] = false end
-	elseif command:match("^hide .*") then				-- hide <bar>  --> this line is pure beauty
-		command = command:gsub("^hide ","")
-		for k,v in ipairs(ElvUI_DTbar._table) do if (v:GetName():lower():match(command:lower())) then v:Hide() db[v:GetName()] = false end end
-	elseif command == 'list' then						-- list
-		for k,v in ipairs(ElvUI_DTbar._table) do print ('Frame: '..v:GetName()) end 
-	elseif command == 'showldb' then
-		for name, obj in Broker.ldb:DataObjectIterator() do
-			print(name)
-		end
-	elseif command == 'ver' then
-		print (ElvUI_DTbar.version)
-	else							-- syntax
-		print ('\
-			commands are:\
-/dtbar show <frameName>\
-/dtbar show all\
-/dtbar hide <frameName>\
-/dtbar hide all\
-/dtbar list\
-')
-	end	
-end]]
-
- -- function ElvUI_DTbar.db_check()
-
-	-- for k,v in ipairs(ElvUI_DTbar._table) do
-		-- local _name = v.db.key
-
-		-- if db[_name] == true then
-			-- v:Show()
-		-- elseif db[_name] == false then
-		-- else								--missing entry
-			-- db[_name] = v.db.value
-			-- v:Show()
-
-		-- end 
-	-- end
--- end
-
-
+ 
 function DT:Loading() 
 	SlashCmdList["ElvUI_DTbar"] = SlashHandler
 	SLASH_ElvUI_DTbar1 = "/dtbar"
 	DT:BottomBarDP()
 	DT:TopBarDP()
+	DT:LDBOneDP()
+	DT:LDBTwoDP()
+	DT:LDBThreeDP()
 	lchat_tab_setup()
 	rchat_tab_setup()
 	exp_rep_tab_setup()
 	DT:ExpRepBarDP()
-	DT:ExpRepMouseOver()
+	DT:CheckLDBMouseover()
+	DT:CheckAPanels()
 	DT:CheckExtra() 
 	DT:CheckTop()
 	DT:CheckBottom()
@@ -457,8 +564,6 @@ function DT:Loading()
 		Broker.ldb.RegisterCallback(Broker, "LibDataBroker_AttributeChanged_"..v.."_text", textUpdate)
 		Broker.ldb.RegisterCallback(Broker, "LibDataBroker_AttributeChanged_"..v.."_value", ValueUpdate)
 	end
-
-	--print(E.db.dtPanels.enable)
 	----------
 	Castbar = CreateFrame("Frame", "ElvCastFrameHolder", E.UIParent)
 	Castbar:Point("TOPLEFT", ElvUF_Player.Castbar, "TOPLEFT")
@@ -490,21 +595,11 @@ pluginObject = pluginObject or {}
 local Frame = CreateFrame('Frame', 'ldb frame', E.UIParent)
 	Frame:EnableMouse(true)
 	Frame:SetBackdropColor(0,0,0,0) 
---	Frame:SetFrameStrata('BACKGROUND')
---	Frame:SetFrameLevel(3)
---	Frame:Size(400, PANEL_HEIGHT)
---	Frame:Point("CENTER", E.UIParent, "CENTER", 0, -E.mult);
---	Frame:SetTemplate()
 	Frame:Hide()
 
 Broker.ldb.frame = Frame
 Broker.ldb.obj = pluginObject
 
---DT:RegisterEvent("PLAYER_ENTERING_WORLD") --Commented out due conflict with datatexts.lua
-
---Function for setting right default value for the function when it doesn't exist in ElvUI.lua (e.g. when it has default value)
---The reason we are doing this is cause core is trying to read default values from profile.lua in config folder of ElvUI
---and doesn't find it so it puts the value as nil. Our code is looking for the value not nil and throws an error.
 function DT:DefaultsSet() 
 	if E.db.datatexts.enableTop == nil then
 		E.db.datatexts.enableTop = false
@@ -552,6 +647,42 @@ function DT:DefaultsSet()
 	
 	if E.db.datatexts.expMouseover == nil then
 		E.db.datatexts.expMouseover = false
+	end
+	
+	if E.db.datatexts.ldbOne == nil then
+		E.db.datatexts.ldbOne = false
+	end
+	
+	if E.db.datatexts.ldbOneWidth == nil then
+		E.db.datatexts.ldbOneWidth = 330
+	end
+	
+	if E.db.datatexts.ldbOneMouseover == nil then
+		E.db.datatexts.ldbOneMouseover = false
+	end
+	
+	if E.db.datatexts.ldbTwo == nil then
+		E.db.datatexts.ldbTwo = false
+	end
+	
+	if E.db.datatexts.ldbTwoWidth == nil then
+		E.db.datatexts.ldbTwoWidth = 330
+	end
+	
+	if E.db.datatexts.ldbTwoMouseover == nil then
+		E.db.datatexts.ldbTwoMouseover = false
+	end
+	
+	if E.db.datatexts.ldbThree == nil then
+		E.db.datatexts.ldbThree = false
+	end
+	
+	if E.db.datatexts.ldbThreeWidth == nil then
+		E.db.datatexts.ldbThreeWidth = 330
+	end
+	
+	if E.db.datatexts.ldbThreeMouseover == nil then
+		E.db.datatexts.ldbThreeMouseover = false
 	end
 	
 end

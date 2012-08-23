@@ -11,6 +11,7 @@
 ## LoadOnDemand: 0
 
 embeds.xml
+locales/load_locales.xml
 
 ElvUI_DTBars.lua
 currency.lua
