@@ -54,7 +54,7 @@ Broker.ldb = LibStub:GetLibrary("LibDataBroker-1.1")
 pluginObjects = {}
 
 ElvUI_DTbar = CreateFrame('Frame', 'ElvUI_DTbar', E.UIParent)
-ElvUI_DTbar.version = '1.4'
+ElvUI_DTbar.version = '2'
 
 local top_bar, bottom_bar, exp_rep, extra_bar, top_panel
 local lchat_tab, rchat_tab, rchat_tab2, ldb_one, ldb_two, ldb_three
@@ -226,6 +226,16 @@ do
 	top_panel:SetFrameLevel(0)
 end	
 
+function DT:MoveChats()
+	if E.db.datatexts.moveChats then
+		LeftChatPanel:Point('BOTTOMLEFT', E.UIParent, 4, E.db.datatexts.chatOffset)
+		RightChatPanel:Point('BOTTOMRIGHT', E.UIParent, -4, E.db.datatexts.chatOffset)
+	else
+		LeftChatPanel:Point('BOTTOMLEFT', E.UIParent, 4, 4)
+		RightChatPanel:Point('BOTTOMRIGHT', E.UIParent, -4, 4)
+	end
+end
+
 
 function DT:CheckLayout()
 	if E.db.datatexts.enableBottom then
@@ -306,9 +316,9 @@ end
 -- exp/rep bar	
 --------------------------------------------------------
 local function exp_rep_tab_setup()
-	UpperRepExpBarHolder:HookScript('OnUpdate', function() 
-		local parent_alpha = UpperRepExpBarHolder:GetAlpha()
-		local parent_alpha = UpperRepExpBarHolder:GetAlpha()
+	ElvUI_ReputationBar:HookScript('OnUpdate', function() 
+		local parent_alpha = ElvUI_ReputationBar:GetAlpha()
+		local parent_alpha = ElvUI_ReputationBar:GetAlpha()
 		if exp_rep:GetAlpha() ~= parent_alpha then exp_rep:SetAlpha( parent_alpha) end
 	end )	
 end
@@ -318,13 +328,13 @@ exp_rep = CreateFrame('Frame', 'EXP_REP_TESTPANEL', E.UIParent)
 exp_rep.db = {key='EXP_REP_TESTPANEL', value = true}
 DT:RegisterPanel(exp_rep, 1, 'ANCHOR_BOTTOM', 0, -4)
 function DT:ExpRepBarDP()
-	exp_rep:Point("TOPLEFT", UpperRepExpBarHolder, "BOTTOMLEFT", 0, -E.mult)
+	exp_rep:Point("TOPLEFT", ElvUI_ReputationBar, "BOTTOMLEFT", 0, -E.mult)
 	exp_rep:SetTemplate('Default', true)
-	exp_rep:Point("TOPLEFT", UpperRepExpBarHolder, "BOTTOMLEFT", 0, -E.mult); 
+	exp_rep:Point("TOPLEFT", ElvUI_ReputationBar, "BOTTOMLEFT", 0, -E.mult); 
 	exp_rep:SetFrameStrata('BACKGROUND')
 	exp_rep:Hide()
 	exp_rep:SetScript('OnShow', function(self) 
-		self:Size(UpperRepExpBarHolder:GetWidth(), PANEL_HEIGHT)
+		self:Size(ElvUI_ReputationBar:GetWidth(), PANEL_HEIGHT)
 		E:CreateMover(exp_rep, "ExpBarMover", "Exp/Rep Datatext Frame") 
 	end)
 end
@@ -514,6 +524,9 @@ ElvUI_DTbar._table = {
 	lchat_tab,
 	rchat_tab,
 	rchat_tab2,
+	ldb_one,
+	ldb_two,
+	ldb_three,
 }
  
 function DT:Loading() 
@@ -522,6 +535,7 @@ function DT:Loading()
 	DT:BottomBarDP()
 	DT:TopBarDP()
 	DT:LDBOneDP()
+	DT:MoveChats()
 	DT:LDBTwoDP()
 	DT:LDBThreeDP()
 	lchat_tab_setup()
@@ -683,6 +697,14 @@ function DT:DefaultsSet()
 	
 	if E.db.datatexts.ldbThreeMouseover == nil then
 		E.db.datatexts.ldbThreeMouseover = false
+	end
+	
+	if E.db.datatexts.moveChats == nil then
+		E.db.datatexts.moveChats = false
+	end
+	
+	if E.db.datatexts.chatOffset == nil then
+		E.db.datatexts.chatOffset = 4
 	end
 	
 end

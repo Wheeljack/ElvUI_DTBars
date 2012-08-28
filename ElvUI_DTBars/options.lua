@@ -268,5 +268,29 @@ E.Options.args.dtPanels = {
 				},
 			},
 		},
+		Other = {
+			order = 5,
+			type = "group",
+			name = L["Other"],
+			guiInline = true,
+			args = {
+				enable = {
+					type = "toggle",
+					order = 1,
+					name = L["Enabled"],
+					get = function(info) return E.db.datatexts.moveChats end,
+					set = function(info, value) E.db.datatexts.moveChats = value; DT:MoveChats() end,
+				},
+				moveChats = {
+					type = "range",
+					order = 2,
+					name = L["Chat Offset"],
+					desc = "Control the Y axis of the chat panels.",
+					min = 1, max = 25, step = .5,
+					get = function(info) return E.db.datatexts.chatOffset end,
+					set = function(info, value) E.db.datatexts.chatOffset = value; DT:MoveChats() end,
+				},
+			},
+		},
 	},
 }

@@ -1,10 +1,10 @@
-## Interface: 40300
+## Interface: 50004
 ## Title: |cff1784d1ElvUI |rDataBars
 ## Author: BlackNet, updated by Caedis
 ## eMail: edstreet@street-tek.com
 ## URL: http://www.tukui.org/forums/topic.php?id=18633
 ## URL: 
-## Version : 1.3b
+## Version : 2
 ## RequiredDeps: ElvUI
 ## DefaultState: Enabled
 ## SavedVariablesPerCharacter: DT_db
